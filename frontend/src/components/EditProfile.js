@@ -62,7 +62,7 @@ const EditProfile = () => {
 
     try {
       await axios.put(
-        'https://mern-project-social-app-connectify.onrender.com/api/users/update-profile',
+        'https://mern-project-social-app-connectify.onrender.com/api/users/edit-profile',
         formData,
         {
           headers: {
