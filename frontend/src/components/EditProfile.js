@@ -42,10 +42,14 @@ const EditProfile = () => {
   const handleRemoveAvatar = async () => {
     if (!window.confirm('Are you sure you want to remove your avatar?')) return;
     try {
-      await axios.delete(
-        'https://mern-project-social-app-connectify.onrender.com/api/users/remove-avatar',
+      await axios.put(
+        'https://mern-project-social-app-connectify.onrender.com/api/users/profile',
+        { removeAvatar: true, name, description },
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         }
       );
       setPreview('/images/default-avatar.jpg');
@@ -65,7 +69,7 @@ const EditProfile = () => {
 
     try {
       await axios.put(
-        'https://mern-project-social-app-connectify.onrender.com/api/users/edit-profile',
+        'https://mern-project-social-app-connectify.onrender.com/api/users/profile',
         formData,
         {
           headers: {
