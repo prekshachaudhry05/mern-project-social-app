@@ -154,8 +154,8 @@ const Timeline = () => {
           </div>
 
           {visiblePosts.map((post) => {
-            const avatarSrc = post.user.avatar
-              ? `https://mern-project-social-app-connectify.onrender.com/${post.user.avatar}`
+            const avatarSrc = user.avatar 
+              ? `https://mern-project-social-app-connectify.onrender.com/${user.avatar}` 
               : '/images/default-avatar.jpg';
             const isOwnPost = post.user._id === currentUserId;
             const liked = post.likes.includes(currentUserId);
