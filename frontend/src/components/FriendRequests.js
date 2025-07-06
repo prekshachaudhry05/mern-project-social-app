@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Navbar from './Navbar';
+import { Link } from 'react-router-dom';
 
 const FriendRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -26,7 +27,7 @@ const FriendRequests = () => {
       await axios.post(
         `https://mern-project-social-app-connectify.onrender.com/api/users/accept-request/${userId}`,
         {},
-        { headers: { Authorization: token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchRequests();
     } catch (err) {
@@ -53,7 +54,7 @@ const FriendRequests = () => {
       <div style={styles.container}>
         <h2 style={styles.heading}>Friend Requests</h2>
         {requests.length === 0 ? (
-          <p>No incoming requests</p>
+          <p style={{ textAlign: 'center', color: '#555' }}>No incoming requests</p>
         ) : (
           requests.map((user) => (
             <div key={user._id} style={styles.card}>
@@ -67,7 +68,9 @@ const FriendRequests = () => {
                 style={styles.avatar}
               />
               <div style={styles.userInfo}>
-                <p style={styles.name}>{user.name}</p>
+                <Link to={`/profile/${user._id}`} style={styles.name}>
+                  {user.name}
+                </Link>
                 <div style={styles.buttons}>
                   <button onClick={() => handleAccept(user._id)} style={styles.accept}>
                     Accept
@@ -120,6 +123,8 @@ const styles = {
     fontSize: '18px',
     fontWeight: 'bold',
     marginBottom: '10px',
+    textDecoration: 'none',
+    color: '#333',
   },
   buttons: {
     display: 'flex',

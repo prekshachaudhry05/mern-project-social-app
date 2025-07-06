@@ -19,14 +19,20 @@ const EditProfile = () => {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/profile', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await axios.get(
+        'https://mern-project-social-app-connectify.onrender.com/api/users/profile',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setName(res.data.name || '');
       setDescription(res.data.description || '');
       if (res.data.avatar) {
         setPreview(`https://mern-project-social-app-connectify.onrender.com/${res.data.avatar}`);
         setHasAvatar(true);
+      } else {
+        setPreview('/images/default-avatar.jpg');
+        setHasAvatar(false);
       }
     } catch (err) {
       console.error('Failed to fetch profile:', err);
@@ -39,7 +45,7 @@ const EditProfile = () => {
       await axios.delete('https://mern-project-social-app-connectify.onrender.com/api/users/remove-avatar', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setPreview('');
+      setPreview('/images/default-avatar.jpg');
       setHasAvatar(false);
     } catch (err) {
       alert('Failed to remove avatar');
@@ -96,20 +102,22 @@ const EditProfile = () => {
             style={styles.textarea}
           />
 
-          {preview && (
-            <div style={styles.avatarSection}>
-              <img src={preview} alt="avatar" style={styles.avatar} />
-              {hasAvatar && (
-                <button
-                  type="button"
-                  onClick={handleRemoveAvatar}
-                  style={styles.removeBtn}
-                >
-                  Remove Avatar
-                </button>
-              )}
-            </div>
-          )}
+          <div style={styles.avatarSection}>
+            <img
+              src={preview || '/images/default-avatar.jpg'}
+              alt="avatar"
+              style={styles.avatar}
+            />
+            {hasAvatar && (
+              <button
+                type="button"
+                onClick={handleRemoveAvatar}
+                style={styles.removeBtn}
+              >
+                Remove Avatar
+              </button>
+            )}
+          </div>
 
           <label style={styles.label}>Upload New Avatar:</label>
           <input
@@ -132,7 +140,7 @@ const styles = {
     display: 'flex',
     justifyContent: 'center',
     backgroundColor: '#ffe4e6',
-    height: '100vh',
+    minHeight: '100vh',
     padding: '30px 0',
   },
   form: {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
 
 const MyFriends = () => {
@@ -55,7 +56,9 @@ const MyFriends = () => {
                 style={styles.avatar}
               />
               <div style={styles.userInfo}>
-                <p style={styles.name}>{user.name}</p>
+                <Link to={`/profile/${user._id}`} style={styles.name}>
+                  {user.name}
+                </Link>
                 <button onClick={() => removeFriend(user._id)} style={styles.removeBtn}>
                   Remove
                 </button>
@@ -105,6 +108,8 @@ const styles = {
   name: {
     fontSize: '18px',
     fontWeight: 'bold',
+    textDecoration: 'none',
+    color: '#333',
   },
   removeBtn: {
     backgroundColor: '#dc3545',

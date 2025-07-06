@@ -1,13 +1,30 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const token = localStorage.getItem('token');
+
+  useEffect(() => {
+    if (token) {
+      axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/profile', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(res => setUser(res.data))
+      .catch(err => console.error("Navbar: failed to load user", err));
+    }
+  }, [token]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     navigate('/');
   };
+
+  const avatarSrc = user?.avatar
+    ? `https://mern-project-social-app-connectify.onrender.com/${user.avatar}`
+    : '/images/default-avatar.jpg';
 
   return (
     <div style={styles.navbar}>
@@ -19,6 +36,18 @@ const Navbar = () => {
           <Link to="/profile" style={styles.link}>Profile</Link>
           <Link to="/friend-requests" style={styles.link}>Requests</Link>
           <Link to="/sent-requests" style={styles.link}>Sent</Link>
+
+          {user && (
+            <div style={styles.userInfo}>
+              <img
+                src={avatarSrc}
+                alt="avatar"
+                style={styles.avatar}
+              />
+              <Link to="/profile" style={styles.username}>{user.name}</Link>
+            </div>
+          )}
+
           <button onClick={handleLogout} style={styles.logoutBtn}>Logout</button>
         </div>
       </div>
@@ -71,6 +100,24 @@ const styles = {
     cursor: 'pointer',
     fontWeight: 'bold',
   },
+  userInfo: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginRight: '10px',
+  },
+  avatar: {
+    width: '30px',
+    height: '30px',
+    borderRadius: '50%',
+    objectFit: 'cover',
+    border: '2px solid white',
+  },
+  username: {
+    color: '#fff',
+    textDecoration: 'none',
+    fontWeight: 'bold',
+  }
 };
 
 export default Navbar;

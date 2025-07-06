@@ -5,32 +5,33 @@ import Navbar from './Navbar';
 const SentRequests = () => {
   const [sentRequests, setSentRequests] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    fetchUserData();
-    fetchAllUsers();
+    if (token) {
+      fetchAllData();
+    }
   }, []);
 
-  const fetchUserData = async () => {
+  const fetchAllData = async () => {
     try {
-      const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/profile', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setSentRequests(res.data.requestsSent);
-    } catch (err) {
-      console.error('Failed to load sent requests', err);
-    }
-  };
+      const [profileRes, usersRes] = await Promise.all([
+        axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/profile', {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/all-users', {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+      ]);
 
-  const fetchAllUsers = async () => {
-    try {
-      const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/all-users', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setAllUsers(res.data);
+      setSentRequests(profileRes.data.requestsSent || []);
+      setAllUsers(usersRes.data);
     } catch (err) {
-      console.error('Failed to load users', err);
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,7 +42,10 @@ const SentRequests = () => {
       <Navbar />
       <div style={styles.container}>
         <h2 style={styles.heading}>Sent Friend Requests</h2>
-        {sentRequests.length === 0 ? (
+
+        {loading ? (
+          <p style={{ textAlign: 'center', color: '#555' }}>Loading...</p>
+        ) : sentRequests.length === 0 ? (
           <p style={styles.noRequests}>You haven’t sent any friend requests.</p>
         ) : (
           sentRequests.map((id) => {

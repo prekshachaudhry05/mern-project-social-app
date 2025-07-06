@@ -10,63 +10,66 @@ const OtherProfile = () => {
   const [posts, setPosts] = useState([]);
   const [friends, setFriends] = useState([]);
   const [showFriends, setShowFriends] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchUser();
-    fetchUserPosts();
-    fetchFriends();
-  }, [userId]);
+    const fetchData = async () => {
+      try {
+        const [userRes, postRes, friendRes] = await Promise.all([
+          axios.get(`https://mern-project-social-app-connectify.onrender.com/api/users/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get('https://mern-project-social-app-connectify.onrender.com/api/posts', {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`https://mern-project-social-app-connectify.onrender.com/api/users/${userId}/friends`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
 
-  const fetchUser = async () => {
-    try {
-      const res = await axios.get(`https://mern-project-social-app-connectify.onrender.com/api/users/${userId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setUser(res.data);
-    } catch (err) {
-      console.error("Failed to fetch user", err);
-    }
-  };
+        setUser(userRes.data);
+        setPosts(postRes.data.filter(post => post.user._id === userId));
+        setFriends(friendRes.data);
+      } catch (err) {
+        console.error("Failed to load other profile data", err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchUserPosts = async () => {
-    try {
-      const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/posts', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const filtered = res.data.filter(post => post.user._id === userId);
-      setPosts(filtered);
-    } catch (err) {
-      console.error("Failed to fetch posts", err);
-    }
-  };
+    fetchData();
+  }, [userId, token]);
 
-  const fetchFriends = async () => {
-    try {
-      const res = await axios.get(`https://mern-project-social-app-connectify.onrender.com/api/users/${userId}/friends`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setFriends(res.data);
-    } catch (err) {
-      console.error("Failed to fetch friends", err);
-    }
-  };
+  if (loading || !user) {
+    return (
+      <div>
+        <Navbar />
+        <div style={{ marginTop: '80px', textAlign: 'center' }}>
+          <p>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
-  if (!user) return <p>Loading profile...</p>;
+  const avatarSrc = user.avatar
+    ? `https://mern-project-social-app-connectify.onrender.com/${user.avatar}`
+    : '/images/default-avatar.jpg';
 
   return (
     <>
       <Navbar />
       <div style={styles.container}>
+        {/* PROFILE INFO */}
         <div style={styles.profileBox}>
           <img
-            src={user.avatar ? `https://mern-project-social-app-connectify.onrender.com/${user.avatar}` : '/images/default-avatar.jpg'}
+            src={avatarSrc}
             alt="avatar"
             style={styles.avatar}
           />
           <div>
             <h2 style={styles.name}>{user.name}</h2>
             <p style={styles.email}>{user.email}</p>
-            <p style={styles.desc}>{user.description}</p>
+            {user.description && <p style={styles.desc}>{user.description}</p>}
             <button onClick={() => setShowFriends(!showFriends)} style={styles.friendBtn}>
               {showFriends ? "Hide Friends" : "Show Friends"}
             </button>
@@ -80,20 +83,25 @@ const OtherProfile = () => {
           </div>
         </div>
 
+        {/* POSTS */}
         <h3 style={styles.sectionTitle}>Posts by {user.name}</h3>
-        {posts.map(post => (
-          <div key={post._id} style={styles.post}>
-            <p>{post.text}</p>
-            {post.image && (
-              <img
-                src={`https://mern-project-social-app-connectify.onrender.com/${post.image}`}
-                alt="post"
-                style={styles.postImage}
-              />
-            )}
-            <small style={styles.timestamp}>{new Date(post.createdAt).toLocaleString()}</small>
-          </div>
-        ))}
+        {posts.length === 0 ? (
+          <p>No posts found</p>
+        ) : (
+          posts.map(post => (
+            <div key={post._id} style={styles.post}>
+              <p>{post.text}</p>
+              {post.image && (
+                <img
+                  src={`https://mern-project-social-app-connectify.onrender.com/${post.image}`}
+                  alt="post"
+                  style={styles.postImage}
+                />
+              )}
+              <small style={styles.timestamp}>{new Date(post.createdAt).toLocaleString()}</small>
+            </div>
+          ))
+        )}
       </div>
     </>
   );

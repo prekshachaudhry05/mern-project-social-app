@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import { FaHeart, FaRegHeart, FaComment } from 'react-icons/fa';
 
@@ -23,13 +24,12 @@ const Timeline = () => {
     fetchCurrentUser();
     fetchAllUsers();
     fetchPosts();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCurrentUser = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/profile', {
-        headers: { Authorization:  `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setCurrentUser(res.data);
     } catch (err) {
@@ -40,7 +40,7 @@ const Timeline = () => {
   const fetchAllUsers = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/all-users', {
-        headers: { Authorization:  `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setAllUsers(res.data);
     } catch (err) {
@@ -108,10 +108,13 @@ const Timeline = () => {
 
   const sendFriendRequest = async (userId) => {
     try {
-      await axios.post(`https://mern-project-social-app-connectify.onrender.com/api/users/send-request/${userId}`, {}, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.post(
+        `https://mern-project-social-app-connectify.onrender.com/api/users/send-request/${userId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       fetchCurrentUser();
+      fetchAllUsers();
     } catch (err) {
       alert('Request failed or already sent.');
     }
@@ -154,9 +157,10 @@ const Timeline = () => {
           </div>
 
           {visiblePosts.map((post) => {
-            const avatarSrc = user.avatar 
-              ? `https://mern-project-social-app-connectify.onrender.com/${user.avatar}` 
+            const avatarSrc = post.user.avatar
+              ? `https://mern-project-social-app-connectify.onrender.com/${post.user.avatar}`
               : '/images/default-avatar.jpg';
+
             const isOwnPost = post.user._id === currentUserId;
             const liked = post.likes.includes(currentUserId);
 
@@ -190,15 +194,20 @@ const Timeline = () => {
                     Delete
                   </button>
                 )}
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   <img
                     src={avatarSrc}
                     alt="avatar"
                     style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }}
                   />
-                  <p><b>{post.user.name}</b></p>
+                  <Link to={`/profile/${post.user._id}`} style={{ color: '#333', fontWeight: 'bold', textDecoration: 'none' }}>
+                    {post.user.name}
+                  </Link>
                 </div>
+
                 <p>{post.text}</p>
+
                 {post.image && (
                   <img
                     src={`https://mern-project-social-app-connectify.onrender.com/${post.image}`}
@@ -207,10 +216,12 @@ const Timeline = () => {
                     style={{ marginTop: '10px', borderRadius: '4px' }}
                   />
                 )}
+
                 <br />
                 <small style={{ color: 'gray', fontSize: '12px' }}>
                   {new Date(post.createdAt).toLocaleString()}
                 </small>
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '10px' }}>
                   <button onClick={() => handleLikeToggle(post)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
                     {liked ? <FaHeart color="red" /> : <FaRegHeart />}
@@ -221,11 +232,12 @@ const Timeline = () => {
                   </button>
                   <span>{post.comments.length} comments</span>
                 </div>
+
                 {expandedPostId === post._id && (
                   <div style={{ marginTop: '10px' }}>
                     <h4>Comments:</h4>
                     {post.comments.map((c, i) => (
-                      <p key={i}><b>{c.user.name}:</b> {c.text}</p>
+                      <p key={i}><b>{c.user?.name || 'Anonymous'}:</b> {c.text}</p>
                     ))}
                     <form
                       onSubmit={(e) => {
@@ -290,7 +302,12 @@ const Timeline = () => {
                     style={{ borderRadius: '50%', objectFit: 'cover' }}
                     alt="suggestion"
                   />
-                  <span>{user.name}</span>
+                  <Link
+                    to={`/profile/${user._id}`}
+                    style={{ fontWeight: 'bold', textDecoration: 'none', color: '#000', flex: 1 }}
+                  >
+                    {user.name}
+                  </Link>
                   <button
                     onClick={() => sendFriendRequest(user._id)}
                     style={{
