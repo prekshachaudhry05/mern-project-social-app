@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Login from './components/Login';
+import Auth from './components/Auth';
 import Register from './components/Register';
 import Timeline from './components/Timeline';
 import Profile from './components/Profile';
@@ -15,7 +15,7 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Auth />} />
         <Route path="/register" element={<Register />} />
         <Route path="/timeline" element={<Timeline />} />
         <Route path="/profile" element={<Profile />} />
