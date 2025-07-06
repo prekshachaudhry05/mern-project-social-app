@@ -1,24 +1,50 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Auth from './components/Auth';
+import Timeline from './components/Timeline';
+import Profile from './components/Profile';
+import EditProfile from './components/EditProfile';
+import CreatePost from './components/CreatePost';
+import FriendRequests from './components/FriendRequests';
+import SentRequests from './components/SentRequests';
+import OtherProfile from './components/OtherProfile';
+
+
+const isAuthenticated = () => !!localStorage.getItem('token');
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        {/* Public Route */}
+        <Route path="/" element={<Auth />} />
+        {/* Protected Routes */}
+        <Route
+          path="/timeline"
+          element={isAuthenticated() ? <Timeline /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/profile"
+          element={isAuthenticated() ? <Profile /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/edit-profile"
+          element={isAuthenticated() ? <EditProfile /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/create"
+          element={isAuthenticated() ? <CreatePost /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/requests"
+          element={isAuthenticated() ? <FriendRequests /> : <Navigate to="/" />}
+        />
+        <Route
+          path="/sent-requests"
+          element={isAuthenticated() ? <SentRequests /> : <Navigate to="/" />}
+        />
+        <Route path="/user/:id" element={<OtherProfile />} />
+      </Routes>
+    </Router>
   );
 }
 
