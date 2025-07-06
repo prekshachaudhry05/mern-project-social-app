@@ -29,7 +29,7 @@ const Timeline = () => {
   const fetchCurrentUser = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/profile', {
-        headers: { Authorization: token },
+        headers: { Authorization:  `Bearer ${token}` },
       });
       setCurrentUser(res.data);
     } catch (err) {
@@ -40,7 +40,7 @@ const Timeline = () => {
   const fetchAllUsers = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/all-users', {
-        headers: { Authorization: token },
+        headers: { Authorization:  `Bearer ${token}` },
       });
       setAllUsers(res.data);
     } catch (err) {
@@ -51,7 +51,7 @@ const Timeline = () => {
   const fetchPosts = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/posts', {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setPosts(res.data);
     } catch (err) {
@@ -63,7 +63,7 @@ const Timeline = () => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     try {
       await axios.delete(`https://mern-project-social-app-connectify.onrender.com/api/posts/${postId}`, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setPosts(posts.filter((post) => post._id !== postId));
     } catch (error) {
@@ -77,7 +77,7 @@ const Timeline = () => {
 
     try {
       await axios.post(`https://mern-project-social-app-connectify.onrender.com/api/posts/${post._id}/${endpoint}`, {}, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       fetchPosts();
     } catch (err) {
@@ -90,7 +90,7 @@ const Timeline = () => {
       await axios.post(
         `https://mern-project-social-app-connectify.onrender.com/api/posts/${postId}/comment`,
         { text: commentText },
-        { headers: { Authorization: token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchPosts();
     } catch (err) {
@@ -109,7 +109,7 @@ const Timeline = () => {
   const sendFriendRequest = async (userId) => {
     try {
       await axios.post(`https://mern-project-social-app-connectify.onrender.com/api/users/send-request/${userId}`, {}, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       fetchCurrentUser();
     } catch (err) {

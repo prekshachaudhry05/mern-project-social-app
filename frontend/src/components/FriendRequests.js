@@ -13,7 +13,7 @@ const FriendRequests = () => {
   const fetchRequests = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/requests-received', {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setRequests(res.data);
     } catch (err) {
@@ -39,7 +39,7 @@ const FriendRequests = () => {
       await axios.post(
         `https://mern-project-social-app-connectify.onrender.com/api/users/reject-request/${userId}`,
         {},
-        { headers: { Authorization: token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       fetchRequests();
     } catch (err) {

@@ -20,7 +20,7 @@ const OtherProfile = () => {
   const fetchUser = async () => {
     try {
       const res = await axios.get(`https://mern-project-social-app-connectify.onrender.com/api/users/${userId}`, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);
     } catch (err) {
@@ -31,7 +31,7 @@ const OtherProfile = () => {
   const fetchUserPosts = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/posts', {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       const filtered = res.data.filter(post => post.user._id === userId);
       setPosts(filtered);
@@ -43,7 +43,7 @@ const OtherProfile = () => {
   const fetchFriends = async () => {
     try {
       const res = await axios.get(`https://mern-project-social-app-connectify.onrender.com/api/users/${userId}/friends`, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setFriends(res.data);
     } catch (err) {

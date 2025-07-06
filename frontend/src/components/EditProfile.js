@@ -20,7 +20,7 @@ const EditProfile = () => {
   const fetchProfile = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/profile', {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setName(res.data.name || '');
       setDescription(res.data.description || '');
@@ -37,7 +37,7 @@ const EditProfile = () => {
     if (!window.confirm('Are you sure you want to remove your avatar?')) return;
     try {
       await axios.delete('https://mern-project-social-app-connectify.onrender.com/api/users/remove-avatar', {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setPreview('');
       setHasAvatar(false);
@@ -60,7 +60,7 @@ const EditProfile = () => {
         formData,
         {
           headers: {
-            Authorization: token,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
           },
         }

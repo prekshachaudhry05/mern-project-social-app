@@ -18,7 +18,7 @@ const Profile = () => {
   const fetchProfile = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/profile', {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setUser(res.data);
     } catch (err) {
@@ -29,7 +29,7 @@ const Profile = () => {
   const fetchPosts = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/posts', {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setPosts(res.data.filter(p => p.user._id === user?._id));
     } catch (err) {
@@ -41,7 +41,7 @@ const Profile = () => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
     try {
       await axios.delete(`https://mern-project-social-app-connectify.onrender.com/api/posts/${postId}`, {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       fetchPosts();
     } catch (err) {

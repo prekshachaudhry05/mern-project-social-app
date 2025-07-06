@@ -15,7 +15,7 @@ const SentRequests = () => {
   const fetchUserData = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/profile', {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setSentRequests(res.data.requestsSent);
     } catch (err) {
@@ -26,7 +26,7 @@ const SentRequests = () => {
   const fetchAllUsers = async () => {
     try {
       const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/all-users', {
-        headers: { Authorization: token },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setAllUsers(res.data);
     } catch (err) {

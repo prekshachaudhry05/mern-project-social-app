@@ -27,11 +27,12 @@ const CreatePost = () => {
         formData,
         {
           headers: {
-            Authorization: token,
-            'Content-Type': 'multipart/form-data',
-          },
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
         }
       );
+
       alert('Post created successfully');
       navigate('/timeline');
     } catch (err) {
