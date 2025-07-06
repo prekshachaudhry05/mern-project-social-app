@@ -63,8 +63,8 @@ const SentRequests = () => {
                   alt="avatar"
                   style={styles.avatar}
                 />
-                <div>
-                  <p><strong>{user.name}</strong></p>
+                <div style={styles.info}>
+                  <p style={{ margin: 0 }}><strong>{user.name}</strong></p>
                   <p style={styles.email}>{user.email}</p>
                 </div>
               </div>
@@ -96,6 +96,7 @@ const styles = {
   card: {
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'space-between',
     backgroundColor: '#ffe6f0',
     padding: '15px',
     borderRadius: '8px',
@@ -109,10 +110,25 @@ const styles = {
     borderRadius: '50%',
     objectFit: 'cover'
   },
+  info: {
+    flex: 1
+  },
   email: {
     fontSize: '14px',
-    color: '#555'
-  }
+    color: '#555',
+    marginTop: '4px'
+  },
+  actions: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-end',
+    gap: '6px'
+  },
+  pendingText: {
+    fontSize: '13px',
+    color: '#888',
+    fontStyle: 'italic'
+  },
 };
 
 export default SentRequests;

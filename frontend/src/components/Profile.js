@@ -96,7 +96,7 @@ const Profile = () => {
             {user.description && <p style={{ marginTop: '5px' }}>{user.description}</p>}
             <div style={{ marginTop: '10px' }}>
               <button onClick={() => navigate('/edit-profile')} style={buttonStyle}>Edit Profile</button>
-              <button onClick={() => navigate('/my-friends')} style={{ ...buttonStyle, marginLeft: '10px' }}>My Friends</button>
+              <button onClick={() => navigate('/MyFriends')} style={{ ...buttonStyle, marginLeft: '10px' }}>My Friends</button>
             </div>
           </div>
         </div>

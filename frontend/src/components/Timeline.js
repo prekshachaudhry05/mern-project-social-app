@@ -48,16 +48,48 @@ const Timeline = () => {
     }
   };
 
-  const fetchPosts = async () => {
-    try {
-      const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/posts', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setPosts(res.data);
-    } catch (err) {
-      console.error('Failed to load posts', err);
-    }
-  };
+const fetchPosts = async () => {
+  try {
+    const res = await axios.get('https://mern-project-social-app-connectify.onrender.com/api/posts', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const postsWithCommentUsers = await Promise.all(
+      res.data.map(async (post) => {
+        const updatedComments = await Promise.all(
+          post.comments.map(async (comment) => {
+            if (typeof comment.user === 'string') {
+              try {
+                const userRes = await axios.get(
+                  `https://mern-project-social-app-connectify.onrender.com/api/users/${comment.user}`,
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
+                return {
+                  ...comment,
+                  user: {
+                    _id: userRes.data._id,
+                    name: userRes.data.name,
+                  },
+                };
+              } catch {
+                return { ...comment, user: { name: 'Anonymous' } };
+              }
+            }
+            return comment;
+          })
+        );
+
+        return { ...post, comments: updatedComments };
+      })
+    );
+
+    setPosts(postsWithCommentUsers);
+  } catch (err) {
+    console.error('Failed to load posts', err);
+  }
+};
+
+
 
   const handleDelete = async (postId) => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
@@ -237,7 +269,9 @@ const Timeline = () => {
                   <div style={{ marginTop: '10px' }}>
                     <h4>Comments:</h4>
                     {post.comments.map((c, i) => (
-                      <p key={i}><b>{c.user?.name || 'Anonymous'}:</b> {c.text}</p>
+                      <p key={i}>
+                        <b>{(typeof c.user === 'object' && c.user?.name) ? c.user.name : 'Anonymous'}:</b> {c.text}
+                      </p>
                     ))}
                     <form
                       onSubmit={(e) => {
@@ -272,60 +306,85 @@ const Timeline = () => {
 
         {/* SUGGESTIONS SIDEBAR */}
         {showSuggestions && (
+  <div
+    style={{
+      flex: 1,
+      backgroundColor: '#fff0f5',
+      borderLeft: '1px solid #ddd',
+      padding: '20px',
+      maxHeight: '100vh',
+      overflowY: 'auto',
+    }}
+  >
+    <h3 style={{ color: '#d63384' }}>People You May Know</h3>
+    {suggestionUsers.length === 0 ? (
+      <p>No suggestions</p>
+    ) : (
+      suggestionUsers.map((user) => {
+        const isRequestSent = currentUser?.requestsSent?.includes(user._id);
+        const avatarSrc = user.avatar
+          ? `https://mern-project-social-app-connectify.onrender.com/${user.avatar}`
+          : '/images/default-avatar.jpg';
+
+        return (
           <div
+            key={user._id}
             style={{
-              flex: 1,
-              backgroundColor: '#fff0f5',
-              borderLeft: '1px solid #ddd',
-              padding: '20px',
-              maxHeight: '100vh',
-              overflowY: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '10px',
             }}
           >
-            <h3 style={{ color: '#d63384' }}>People You May Know</h3>
-            {suggestionUsers.length === 0 ? (
-              <p>No suggestions</p>
+            <img
+              src={avatarSrc}
+              width="40"
+              height="40"
+              style={{ borderRadius: '50%', objectFit: 'cover' }}
+              alt="suggestion"
+            />
+            <Link to={`/profile/${user._id}`} style={{
+                fontWeight: 'bold',
+                textDecoration: 'none',
+                color: '#000',
+                flex: 1,
+              }}>{user.name}</Link>
+
+            {isRequestSent ? (
+              <button
+                disabled
+                style={{
+                  padding: '4px 10px',
+                  backgroundColor: '#6c757d',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                }}
+              >
+                Sent
+              </button>
             ) : (
-              suggestionUsers.map((user) => (
-                <div
-                  key={user._id}
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}
-                >
-                  <img
-                    src={
-                      user.avatar
-                        ? `https://mern-project-social-app-connectify.onrender.com/${user.avatar}`
-                        : '/images/default-avatar.jpg'
-                    }
-                    width="40"
-                    height="40"
-                    style={{ borderRadius: '50%', objectFit: 'cover' }}
-                    alt="suggestion"
-                  />
-                  <Link
-                    to={`/profile/${user._id}`}
-                    style={{ fontWeight: 'bold', textDecoration: 'none', color: '#000', flex: 1 }}
-                  >
-                    {user.name}
-                  </Link>
-                  <button
-                    onClick={() => sendFriendRequest(user._id)}
-                    style={{
-                      padding: '4px 10px',
-                      backgroundColor: '#007bff',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '4px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Add
-                  </button>
-                </div>
-              ))
+              <button
+                onClick={() => sendFriendRequest(user._id)}
+                style={{
+                  padding: '4px 10px',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                }}
+              >
+                Add
+              </button>
             )}
           </div>
-        )}
+        );
+      })
+    )}
+  </div>
+)}
+
       </div>
     </div>
   );

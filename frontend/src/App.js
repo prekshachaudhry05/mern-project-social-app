@@ -8,7 +8,8 @@ import EditProfile from './components/EditProfile';
 import CreatePost from './components/CreatePost';
 import FriendRequests from './components/FriendRequests';
 import SentRequests from './components/SentRequests';
-import Navbar from './components/Navbar';
+import MyFriends from './components/MyFriends';
+import OtherProfile from './components/OtherProfile';
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
         <Route path="/create-post" element={<CreatePost />} />
         <Route path="/friend-requests" element={<FriendRequests />} />
         <Route path="/sent-requests" element={<SentRequests />} />
+        <Route path="/MyFriends" element={<MyFriends />} />
+        <Route path="/profile/:userId" element={<OtherProfile />} />
       </Routes>
     </Router>
   );

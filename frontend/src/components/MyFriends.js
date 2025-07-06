@@ -56,9 +56,8 @@ const MyFriends = () => {
                 style={styles.avatar}
               />
               <div style={styles.userInfo}>
-                <Link to={`/profile/${user._id}`} style={styles.name}>
-                  {user.name}
-                </Link>
+                <Link to={`/profile/${user._id}`} style={styles.name}>{user.name}</Link>
+
                 <button onClick={() => removeFriend(user._id)} style={styles.removeBtn}>
                   Remove
                 </button>

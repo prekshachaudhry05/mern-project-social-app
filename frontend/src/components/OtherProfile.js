@@ -15,23 +15,16 @@ const OtherProfile = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [userRes, postRes, friendRes] = await Promise.all([
-          axios.get(`https://mern-project-social-app-connectify.onrender.com/api/users/${userId}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get('https://mern-project-social-app-connectify.onrender.com/api/posts', {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`https://mern-project-social-app-connectify.onrender.com/api/users/${userId}/friends`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+        const res = await axios.get(
+          `https://mern-project-social-app-connectify.onrender.com/api/users/${userId}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
-        setUser(userRes.data);
-        setPosts(postRes.data.filter(post => post.user._id === userId));
-        setFriends(friendRes.data);
+        setUser(res.data.user);
+        setPosts(res.data.posts);
+        setFriends(res.data.friends);
       } catch (err) {
-        console.error("Failed to load other profile data", err);
+        console.error("Failed to load profile data", err);
       } finally {
         setLoading(false);
       }
@@ -42,12 +35,12 @@ const OtherProfile = () => {
 
   if (loading || !user) {
     return (
-      <div>
+      <>
         <Navbar />
         <div style={{ marginTop: '80px', textAlign: 'center' }}>
           <p>Loading profile...</p>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -59,13 +52,8 @@ const OtherProfile = () => {
     <>
       <Navbar />
       <div style={styles.container}>
-        {/* PROFILE INFO */}
         <div style={styles.profileBox}>
-          <img
-            src={avatarSrc}
-            alt="avatar"
-            style={styles.avatar}
-          />
+          <img src={avatarSrc} alt="avatar" style={styles.avatar} />
           <div>
             <h2 style={styles.name}>{user.name}</h2>
             <p style={styles.email}>{user.email}</p>
@@ -75,20 +63,21 @@ const OtherProfile = () => {
             </button>
             {showFriends && (
               <div style={styles.friendList}>
-                {friends.length === 0 ? <p>No friends</p> : friends.map(friend => (
-                  <p key={friend._id}>{friend.name}</p>
-                ))}
+                {friends.length === 0 ? (
+                  <p>No friends</p>
+                ) : (
+                  friends.map((f) => <p key={f._id}>{f.name}</p>)
+                )}
               </div>
             )}
           </div>
         </div>
 
-        {/* POSTS */}
         <h3 style={styles.sectionTitle}>Posts by {user.name}</h3>
         {posts.length === 0 ? (
           <p>No posts found</p>
         ) : (
-          posts.map(post => (
+          posts.map((post) => (
             <div key={post._id} style={styles.post}>
               <p>{post.text}</p>
               {post.image && (

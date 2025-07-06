@@ -68,9 +68,8 @@ const FriendRequests = () => {
                 style={styles.avatar}
               />
               <div style={styles.userInfo}>
-                <Link to={`/profile/${user._id}`} style={styles.name}>
-                  {user.name}
-                </Link>
+                <Link to={`/profile/${user._id}`} style={styles.name}>{user.name}</Link>
+
                 <div style={styles.buttons}>
                   <button onClick={() => handleAccept(user._id)} style={styles.accept}>
                     Accept

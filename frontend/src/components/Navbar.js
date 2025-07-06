@@ -8,13 +8,19 @@ const Navbar = () => {
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    if (token) {
-      axios.get('https://mern-project-social-app-connectify.onrender.com/api/users/profile', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then(res => setUser(res.data))
-      .catch(err => console.error("Navbar: failed to load user", err));
-    }
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(
+          'https://mern-project-social-app-connectify.onrender.com/api/users/profile',
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setUser(res.data); // store full user object
+      } catch (err) {
+        console.error('Failed to fetch user:', err);
+      }
+    };
+
+    if (token) fetchUser();
   }, [token]);
 
   const handleLogout = () => {
@@ -35,7 +41,6 @@ const Navbar = () => {
           <Link to="/create-post" style={styles.link}>Create Post</Link>
           <Link to="/profile" style={styles.link}>Profile</Link>
           <Link to="/friend-requests" style={styles.link}>Requests</Link>
-          <Link to="/sent-requests" style={styles.link}>Sent</Link>
 
           {user && (
             <div style={styles.userInfo}>
@@ -70,7 +75,7 @@ const styles = {
   },
   navContent: {
     width: '100%',
-    padding: '0 30px',
+    padding: '0 40px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
@@ -84,7 +89,7 @@ const styles = {
   links: {
     display: 'flex',
     alignItems: 'center',
-    gap: '15px',
+    gap: '30px',
   },
   link: {
     color: '#fff',
