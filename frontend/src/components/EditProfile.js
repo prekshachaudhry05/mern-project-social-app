@@ -9,6 +9,7 @@ const EditProfile = () => {
   const [avatar, setAvatar] = useState(null);
   const [preview, setPreview] = useState('');
   const [hasAvatar, setHasAvatar] = useState(false);
+  const [removeAvatar, setRemoveAvatar] = useState(false);
 
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
@@ -39,33 +40,17 @@ const EditProfile = () => {
     }
   };
 
-  const handleRemoveAvatar = async () => {
-    if (!window.confirm('Are you sure you want to remove your avatar?')) return;
-    try {
-      await axios.put(
-        'https://mern-project-social-app-connectify.onrender.com/api/users/profile',
-        { removeAvatar: true, name, description },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-      setPreview('/images/default-avatar.jpg');
-      setHasAvatar(false);
-    } catch (err) {
-      alert('Failed to remove avatar');
-    }
-  };
-
   const handleUpdate = async (e) => {
     e.preventDefault();
 
     const formData = new FormData();
     formData.append('name', name);
     formData.append('description', description);
-    if (avatar) formData.append('avatar', avatar);
+    formData.append('removeAvatar', removeAvatar.toString());
+
+    if (avatar && !removeAvatar) {
+      formData.append('avatar', avatar);
+    }
 
     try {
       await axios.put(
@@ -83,6 +68,14 @@ const EditProfile = () => {
     } catch (err) {
       alert('Failed to update profile');
     }
+  };
+
+  const handleRemoveAvatar = () => {
+    if (!window.confirm('Are you sure you want to remove your avatar?')) return;
+    setRemoveAvatar(true);
+    setPreview('/images/default-avatar.jpg');
+    setAvatar(null);
+    setHasAvatar(false);
   };
 
   return (
@@ -130,7 +123,12 @@ const EditProfile = () => {
           <input
             type="file"
             accept="image/*"
-            onChange={(e) => setAvatar(e.target.files[0])}
+            onChange={(e) => {
+              setAvatar(e.target.files[0]);
+              setRemoveAvatar(false); // reset in case user re-uploads
+              setPreview(URL.createObjectURL(e.target.files[0]));
+              setHasAvatar(true);
+            }}
             style={styles.inputFile}
           />
 
