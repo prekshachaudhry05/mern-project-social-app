@@ -26,27 +26,30 @@ const Auth = () => {
         setIsLogin(true);
       }
     } catch (err) {
-      alert(err.response.data || 'An error occurred');
+      alert(err.response?.data || 'An error occurred');
     }
   };
 
   return (
-    <div className="auth-container">
-      <form onSubmit={handleSubmit}>
-        <h2>{isLogin ? 'Login' : 'Register'}</h2>
-        {!isLogin && (
-          <>
-            <input name="name" placeholder="Name" onChange={handleChange} required />
-            <input name="description" placeholder="Description" onChange={handleChange} />
-          </>
-        )}
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
-        <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
-        <p onClick={() => setIsLogin(!isLogin)} style={{ cursor: 'pointer', color: 'blue' }}>
-          {isLogin ? 'Create an account' : 'Already have an account? Login'}
-        </p>
-      </form>
+    <div className="auth-page">
+      <h1 className="auth-title">Connectify</h1>
+      <div className="auth-container">
+        <form onSubmit={handleSubmit}>
+          <h2>{isLogin ? 'Login' : 'Register'}</h2>
+          {!isLogin && (
+            <>
+              <input name="name" placeholder="Name" onChange={handleChange} required />
+              <input name="description" placeholder="Description" onChange={handleChange} />
+            </>
+          )}
+          <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
+          <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
+          <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
+          <p onClick={() => setIsLogin(!isLogin)} style={{ cursor: 'pointer', color: 'blue' }}>
+            {isLogin ? 'Create an account' : 'Already have an account? Login'}
+          </p>
+        </form>
+      </div>
     </div>
   );
 };
